@@ -6,7 +6,7 @@ include 'includes/header.php';
 <style>
     /* Navbar styling to align items to the right */
     .navbar-nav {
-        margin-left: auto; /* Pushes the items to the right */
+        /* margin-left: auto; */
     }
 
     /* Styling for the new requests section */
@@ -16,20 +16,20 @@ include 'includes/header.php';
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         padding: 20px;
         margin-top: 20px;
-        overflow-x: auto; /* Allow horizontal scroll for large tables */
+        overflow-x: auto;
     }
 
     .page-title {
         font-size: 24px;
         color: #333;
-        text-align: center; /* Center the title */
+        text-align: center;
         margin-bottom: 20px;
     }
 
     .request-table {
         width: 100%;
         border-collapse: collapse;
-        table-layout: auto; /* Automatically adjust column width */
+        table-layout: auto;
         margin-top: 20px;
     }
 
@@ -37,10 +37,10 @@ include 'includes/header.php';
     .request-table td {
         border: 1px solid #ddd;
         padding: 10px;
-        text-align: center; /* Center-align table text */
-        white-space: nowrap; /* Prevent text from breaking into multiple lines */
+        text-align: center;
+        white-space: nowrap;
         overflow: hidden;
-        text-overflow: ellipsis; /* Show ellipsis for overflowed text */
+        text-overflow: ellipsis;
     }
 
     .request-table th {
@@ -54,7 +54,7 @@ include 'includes/header.php';
         border: none;
         border-radius: 5px;
         cursor: pointer;
-        transition: background-color 0.3s; /* Smooth transition on hover */
+        transition: background-color 0.3s;
     }
 
     .btn-approve {
@@ -63,7 +63,7 @@ include 'includes/header.php';
     }
 
     .btn-approve:hover {
-        background-color: #218838; /* Darker green on hover */
+        background-color: #218838;
     }
 
     .btn-reject {
@@ -72,14 +72,13 @@ include 'includes/header.php';
     }
 
     .btn-reject:hover {
-        background-color: #c82333; /* Darker red on hover */
+        background-color: #c82333;
     }
 
-    /* Responsive adjustments for smaller screens */
     @media (max-width: 768px) {
         .request-table th,
         .request-table td {
-            font-size: 12px; /* Smaller font size for mobile */
+            font-size: 12px;
         }
         .page-title {
             font-size: 20px;
@@ -94,10 +93,12 @@ include 'includes/header.php';
     }
 </style>
 
-<body class="hold-transition skin-blue layout-top-nav">
+<body class="hold-transition skin-blue sidebar-mini">
     <div class="wrapper">
-          <?php include 'includes/navbar.php'; ?>
-          <?php include 'includes/menubar.php'; ?>
+        
+        <?php include 'includes/menubar.php'; ?>
+        <?php include 'includes/navbar.php'; ?>
+
         <div class="content-wrapper">
             <div class="container">
                 <section class="content">
@@ -110,7 +111,7 @@ include 'includes/header.php';
 
                         if ($query->num_rows > 0) {
                             echo '<table class="request-table">';
-                            echo '<tr><th>First Name</th><th>Last Name</th><th>Father\'s Name</th><th>Mother\'s Name</th><th>Age</th><th>Date of Birth</th><th>Gender</th><th>House</th><th>Street</th><th>Town</th><th>Pincode</th><th>State</th><th>Parliamentary</th><th>District</th><th>Email</th><th>Mobile</th><th>Photo</th><th>Action</th></tr>';
+                            echo '<tr><th>First Name</th><th>Last Name</th><th>Father\'s Name</th><th>Mother\'s Name</th><th>Age</th><th>Date of Birth</th><th>Gender</th><th>House</th><th>Street</th><th>Town</th><th>Pincode</th><th>State</th><th>Parliamentary</th><th>District</th><th>Email</th><th>Mobile</th><th>Photo</th><th>Aadhar</th><th>Aadhar File</th><th>Action</th></tr>';
 
                             while ($row = $query->fetch_assoc()) {
                                 echo '<tr>';
@@ -130,7 +131,18 @@ include 'includes/header.php';
                                 echo '<td>' . htmlspecialchars($row['district']) . '</td>';
                                 echo '<td>' . htmlspecialchars($row['email']) . '</td>';
                                 echo '<td>' . htmlspecialchars($row['mobile']) . '</td>';
-                                echo '<td><img src="' . htmlspecialchars($row['photo']) . '" alt="Photo"></td>';
+
+                                // Display the photo with corrected path
+                                $photoPath = 'http://localhost/votesystem/' . htmlspecialchars($row['photo']);
+                                echo '<td><a href="' . $photoPath . '" target="_blank">View File</a></td>';
+
+                                // Display the aadhar
+                                echo '<td>' . htmlspecialchars($row['aadhar']) . '</td>';
+
+                                // Display the aadhar file link with corrected path
+                                $aadharFilePath = 'http://localhost/votesystem/' . htmlspecialchars($row['aadharfile']);
+                                echo '<td><a href="' . $aadharFilePath . '" target="_blank">View File</a></td>';
+
                                 echo '<td>';
                                 echo '<button class="btn-approve" onclick="handleApprove(' . $row['id'] . ')">Approve</button>';
                                 echo '<button class="btn-reject" onclick="handleReject(' . $row['id'] . ')">Reject</button>';
@@ -147,6 +159,8 @@ include 'includes/header.php';
                 </section>
             </div>
         </div>
+        <?php include 'includes/scripts.php'; ?>
+        <?php include 'includes/footer.php'; ?>
     </div>
 
     <script>
@@ -163,7 +177,5 @@ include 'includes/header.php';
         }
     </script>
 
-    <?php include 'includes/footer.php'; ?>
-    <?php include 'includes/scripts.php'; ?>
 </body>
 </html>

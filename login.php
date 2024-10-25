@@ -1,13 +1,13 @@
 <?php
 session_start();
-include 'includes/conn.php'; // Make sure this includes the code to connect to the database
+include 'includes/conn.php'; // Ensure this includes the code to connect to the database
 
 if (isset($_POST['login'])) {
     $identifier = $_POST['identifier'];
     $password = $_POST['password'];
 
     // Prepare the SQL query to select the user by Voter's ID or Email
-    $sql = "SELECT * FROM voters WHERE voters_id = ? OR email = ?";
+    $sql = "SELECT * FROM voters_detail WHERE voters_id = ? OR email = ?";
 
     // Prepare and execute the query
     if ($stmt = $conn->prepare($sql)) {
@@ -25,7 +25,7 @@ if (isset($_POST['login'])) {
             // Verify the password
             if (password_verify($password, $voter['password'])) {
                 // Password is correct, start the session for the user
-                $_SESSION['voter'] = $voter['id'];
+                $_SESSION['voter'] = $voter['voters_id'];
                 header('location: home.php');
             } else {
                 // Incorrect password

@@ -95,7 +95,7 @@
           <div class="small-box bg-yellow">
           <div class="inner" style="background-color: #B59B91 ;color:black ; font-size:15px; font-family:Times">
               <?php
-                $sql = "SELECT * FROM voters";
+                $sql = "SELECT * FROM voters_detail";
                 $query = $conn->query($sql);
 
                 echo "<h3>".$query->num_rows."</h3>";

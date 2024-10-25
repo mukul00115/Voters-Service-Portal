@@ -13,10 +13,9 @@
       <div class="collapse navbar-collapse pull-left" id="navbar-collapse">
         <ul class="nav navbar-nav">
           <?php
-            if (isset($_SESSION['student'])) {
+            if (isset($_SESSION['voter'])) {
               echo "
                 <li><a href='index.php' style='color: #ECF0F1; font-size: 18px;'>HOME</a></li>
-                <li><a href='transaction.php' style='color: #ECF0F1; font-size: 18px;'>TRANSACTION</a></li>
               ";
             }
           ?>
@@ -27,13 +26,13 @@
         <ul class="nav navbar-nav">
           <li class="user user-menu">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-              <img src="<?php echo (!empty($voter['photo'])) ? 'images/'.$voter['photo'] : 'images/profile.jpg'; ?>" class="user-image" alt="User Image" style="border-radius: 50%;">
+              <img src="<?php echo (!empty($voter['photo'])) ? ''.$voter['photo'] : 'images/profile.jpg'; ?>" class="user-image" alt="User Image" style="border-radius: 50%;">
               <span class="hidden-xs" style="color: #ECF0F1; font-size: 20px;"><?php echo $voter['firstname'].' '.$voter['lastname']; ?></span>
             </a>
             <ul class="dropdown-menu">
               <!-- User image -->
               <li class="user-header" style="background-color: #2C3E50;">
-                <img src="<?php echo (!empty($voter['photo'])) ? 'images/'.$voter['photo'] : 'images/profile.jpg'; ?>" class="img-circle" alt="User Image">
+                <img src="<?php echo (!empty($voter['photo'])) ? ''.$voter['photo'] : 'images/profile.jpg'; ?>" class="img-circle" alt="User Image">
                 <p style="color: #ECF0F1;">
                   <?php echo $voter['firstname'].' '.$voter['lastname']; ?>
                 </p>

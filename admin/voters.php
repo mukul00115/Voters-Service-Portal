@@ -6,9 +6,7 @@
   <?php include 'includes/navbar.php'; ?>
   <?php include 'includes/menubar.php'; ?>
 
-  <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper" style="background-color:#F1E9D2">
-    <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1><b>Voters List</b></h1>
       <ol class="breadcrumb" style="color:black; font-size: 17px; font-family:Times">
@@ -16,7 +14,6 @@
         <li class="active" style="color:black; font-size: 17px; font-family:Times">Dashboard</li>
       </ol>
     </section>
-    <!-- Main content -->
     <section class="content">
       <?php
         if(isset($_SESSION['error'])){
@@ -44,7 +41,7 @@
         <div class="col-xs-12">
           <div class="box" style="background-color: #d8d1bd">
             <div class="box-header with-border" style="background-color: #d8d1bd">
-              <a href="#addnew" data-toggle="modal" class="btn btn-primary btn-sm btn-curve" style="background-color: #4682B4; color:black; font-size: 12px; font-family:Times"><i class="fa fa-plus"></i> New</a>
+              <!-- Removed the "New" button here -->
             </div>
             <div class="box-body">
               <table id="example1" class="table">
@@ -59,10 +56,10 @@
                 </thead>
                 <tbody>
                   <?php
-                    $sql = "SELECT * FROM voters";
+                    $sql = "SELECT * FROM voters_detail";
                     $query = $conn->query($sql);
                     while($row = $query->fetch_assoc()){
-                      $image = (!empty($row['photo'])) ? '../images/'.$row['photo'] : '../images/profile.jpg';
+                      $image = (!empty($row['photo'])) ? (strpos($row['photo'], 'images/') === 0 ? $row['photo'] : 'images/'.$row['photo']) : 'images/profile.jpg';
                       echo "
                         <tr style='color:black; font-size: 15px; font-family:Times'>
                           <td>".$row['lastname']."</td>
@@ -70,13 +67,13 @@
                           <td>".$row['email']."</td>
                           <td>".$row['mobile']."</td>
                           <td>
-                            <img src='".$image."' width='30px' height='30px'>
-                            <a href='#edit_photo' data-toggle='modal' class='pull-right photo' data-id='".$row['id']."'><span class='fa fa-edit'></span></a>
+                            <img src='/votesystem/".$image."' width='30px' height='30px'>
+                            <a href='#edit_photo' data-toggle='modal' class='pull-right photo' data-id='".$row['voters_id']."'><span class='fa fa-edit'></span></a>
                           </td>
                           <td>".$row['voters_id']."</td>
                           <td>
-                            <button class='btn btn-success btn-sm edit btn-curve' style='background-color: #9CD095; color:black; font-size: 12px; font-family:Times' data-id='".$row['id']."'><i class='fa fa-edit'></i> Edit</button>
-                            <button class='btn btn-danger btn-sm delete btn-curve' style='background-color:#ff8e88; color:black; font-size: 12px; font-family:Times' data-id='".$row['id']."'><i class='fa fa-trash'></i> Delete</button>
+                            <button class='btn btn-success btn-sm edit btn-curve' style='background-color: #9CD095; color:black; font-size: 12px; font-family:Times' data-id='".$row['voters_id']."'><i class='fa fa-edit'></i> Edit</button>
+                            <button class='btn btn-danger btn-sm delete btn-curve' style='background-color:#ff8e88; color:black; font-size: 12px; font-family:Times' data-id='".$row['voters_id']."'><i class='fa fa-trash'></i> Delete</button>
                           </td>
                         </tr>
                       ";
@@ -125,17 +122,27 @@ function getRow(id){
     data: {id: id},
     dataType: 'json',
     success: function(response){
-      $('.id').val(response.id);
+      $('.id').val(response.voters_id);
       $('.fullname').html(response.firstname + ' ' + response.lastname);
       $('#edit_firstname').val(response.firstname);
       $('#edit_lastname').val(response.lastname);
       $('#edit_email').val(response.email);
       $('#edit_mobile').val(response.mobile);
-      $('#edit_password').val(response.password);
+      $('#edit_town').val(response.town);
+      $('#edit_fathersname').val(response.fathersname);
+      $('#edit_mothersname').val(response.mothersname);
+      $('#edit_dob').val(response.dob);
+      $('#edit_street').val(response.street);
+      $('#edit_house').val(response.house);
+      $('#edit_gender').val(response.gender);
+      $('#edit_state').val(response.state);
+      $('#edit_pincode').val(response.pincode);
+      $('#edit_age').val(response.age);
+      $('#edit_parliamentary').val(response.parliamentary);
+      $('#edit_district').val(response.district);
     }
   });
 }
-
 </script>
 </body>
 </html>

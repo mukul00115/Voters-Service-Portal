@@ -7,17 +7,28 @@ if(isset($_POST['edit'])){
     $firstname = $_POST['firstname'];
     $email = $_POST['email'];
     $mobile = $_POST['mobile'];
-    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+    $fathersname = $_POST['fathersname'];
+    $mothersname = $_POST['mothersname'];
+    $age = $_POST['age'];
+    $dob = $_POST['dob'];
+    $gender = $_POST['gender'];
+    $house = $_POST['house'];
+    $street = $_POST['street'];
+    $town = $_POST['town'];
+    $pincode = $_POST['pincode'];
+    $state = $_POST['state'];
+    $parliamentary = $_POST['parliamentary'];
+    $district = $_POST['district'];
 
-    $sql = "UPDATE voters SET lastname = '$lastname', firstname = '$firstname', email = '$email', mobile = '$mobile', password = '$password' WHERE id = '$id'";
+    // Update voters_detail table
+    $sql = "UPDATE voters_detail SET lastname = '$lastname', firstname = '$firstname', email = '$email', mobile = '$mobile', fathersname = '$fathersname', mothersname = '$mothersname', age = '$age', dob = '$dob', gender = '$gender', house = '$house', street = '$street', town = '$town', pincode = '$pincode', state = '$state', parliamentary = '$parliamentary', district = '$district' WHERE voters_id = '$id'";
+    
     if($conn->query($sql)){
         $_SESSION['success'] = 'Voter updated successfully';
-    }
-    else{
+    } else {
         $_SESSION['error'] = $conn->error;
     }
-}
-else{
+} else {
     $_SESSION['error'] = 'Select voter to edit first';
 }
 

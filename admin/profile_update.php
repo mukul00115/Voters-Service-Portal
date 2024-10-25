@@ -22,8 +22,21 @@ if (isset($_POST['save'])) {
         // Handle file upload
         $filename = $_FILES['photo']['name'];
         if (!empty($filename)) {
-            move_uploaded_file($_FILES['photo']['tmp_name'], 'images/'.$filename);
-            $filename = $_FILES['photo']['name'];
+            $target_directory = '../images/';  // Adjusted the path to save in the root images directory
+            $target_file = $target_directory . basename($filename);
+
+            // Ensure the target directory exists
+            if (!is_dir($target_directory)) {
+                mkdir($target_directory, 0777, true);
+            }
+
+            if (move_uploaded_file($_FILES['photo']['tmp_name'], $target_file)) {
+                $filename = basename($filename);
+            } else {
+                $_SESSION['error'] = 'Failed to upload the photo.';
+                header('location: ' . $_GET['return']);
+                exit();
+            }
         } else {
             $filename = $row['photo'];
         }
@@ -59,3 +72,4 @@ if (isset($_POST['save'])) {
 }
 
 header('location: ' . $_GET['return']);
+?>

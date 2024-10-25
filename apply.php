@@ -25,8 +25,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $state = $_POST['States'];
     $parliamentary = $_POST['Parliamentary'];
     $district = $_POST['district'];
-    $mobile = $_POST['mobile']; // New field
-    $email = $_POST['email']; // New field
+    $mobile = $_POST['mobile'];
+    $email = $_POST['email'];
+    $aadhar = $_POST['aadhar'];
 
     $photo = $_FILES['photo'];
     $photoName = $photo['name'];
@@ -34,51 +35,67 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $photoError = $photo['error'];
     $photoSize = $photo['size'];
 
-    $uploadDir = 'uploads/';
-    if (!is_dir($uploadDir)) {
-        mkdir($uploadDir, 0777, true); // Create the directory if it doesn't exist
-    }
+    $aadharFile = $_FILES['aadharfile'];
+    $aadharFileName = $aadharFile['name'];
+    $aadharFileTmpName = $aadharFile['tmp_name'];
+    $aadharFileError = $aadharFile['error'];
+    $aadharFileSize = $aadharFile['size'];
 
-    if ($photoError === 0) {
-        if ($photoSize < 500000) { // Limit photo size to 500KB
-            $photoExt = pathinfo($photoName, PATHINFO_EXTENSION);
-            $allowed = array('jpg', 'jpeg', 'png', 'gif');
+    if (strlen($mobile) != 10 || !ctype_digit($mobile)) {
+        echo "<script>alert('Mobile number must be exactly 10 digits.');</script>";
+    } elseif (strlen($aadhar) != 12 || !ctype_digit($aadhar)) {
+        echo "<script>alert('Aadhar number must be exactly 12 digits.');</script>";
+    } elseif ($photoError !== 0 || $aadharFileError !== 0) {
+        echo "<script>alert('Error uploading files.');</script>";
+    } elseif ($photoSize > 500000 || $aadharFileSize > 500000) {
+        echo "<script>alert('File size exceeds limit of 500KB.');</script>";
+    } else {
+        $uploadDir = 'images/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0777, true);
+        }
 
-            if (in_array($photoExt, $allowed)) {
-                $photoNameNew = uniqid('', true) . "." . $photoExt;
-                $photoDestination = $uploadDir . $photoNameNew;
-                if (move_uploaded_file($photoTmpName, $photoDestination)) {
-                    $voters_id = uniqid();
-                    $password = password_hash($voters_id, PASSWORD_BCRYPT);
+        $photoExt = pathinfo($photoName, PATHINFO_EXTENSION);
+        $aadharFileExt = pathinfo($aadharFileName, PATHINFO_EXTENSION);
+        $allowed = array('jpg', 'jpeg', 'png', 'gif', 'pdf');
 
-                    $sql = "INSERT INTO voters_detail (voters_id, password, firstname, lastname, fathersname, mothersname, age, dob, gender, house, street, town, pincode, state, parliamentary, district, email, mobile, photo) VALUES ('$voters_id', '$password', '$firstname', '$lastname', '$fathersname', '$mothersname', '$age', '$dob', '$gender', '$house', '$street', '$town', '$pincode', '$state', '$parliamentary', '$district', '$email', '$mobile', '$photoDestination')";
+        if (in_array($photoExt, $allowed) && in_array($aadharFileExt, $allowed)) {
+            $photoNameNew = uniqid('', true) . "." . $photoExt;
+            $aadharFileNameNew = uniqid('', true) . "." . $aadharFileExt;
+            $photoDestination = $uploadDir . $photoNameNew;
+            $aadharFileDestination = $uploadDir . $aadharFileNameNew;
 
-                    if ($conn->query($sql) === TRUE) {
-                        // Return a JavaScript snippet to show the popup and redirect
-                        echo "<script>
-                            alert('New voter registered successfully');
-                            window.location.href='index.php';
-                            </script>";
-                    } else {
-                        echo "Error: " . $sql . "<br>" . $conn->error;
-                    }
+            if (move_uploaded_file($photoTmpName, $photoDestination) && move_uploaded_file($aadharFileTmpName, $aadharFileDestination)) {
+                // Debugging statements
+                echo "Photo uploaded to: " . $photoDestination . "<br>";
+                echo "Aadhar uploaded to: " . $aadharFileDestination . "<br>";
+
+                $voters_id = uniqid();
+                $password = password_hash($voters_id, PASSWORD_BCRYPT);
+
+                $sql = "INSERT INTO pending_voters (firstname, lastname, fathersname, mothersname, age, dob, gender, house, street, town, pincode, state, parliamentary, district, email, mobile, photo, aadhar, aadharfile) VALUES ('$firstname', '$lastname', '$fathersname', '$mothersname', '$age', '$dob', '$gender', '$house', '$street', '$town', '$pincode', '$state', '$parliamentary', '$district', '$email', '$mobile', '$photoDestination', '$aadhar', '$aadharFileDestination')";
+
+                if ($conn->query($sql) === TRUE) {
+                    echo "<script>
+                        alert('New voter registered successfully');
+                        window.location.href='index.php';
+                        </script>";
                 } else {
-                    echo "Failed to move the uploaded file.";
+                    echo "Error: " . $sql . "<br>" . $conn->error;
                 }
             } else {
-                echo "Invalid file type.";
+                echo "Failed to move the uploaded files.";
+                echo "Photo tmp path: " . $photoTmpName . "<br>";
+                echo "Aadhar tmp path: " . $aadharFileTmpName . "<br>";
             }
         } else {
-            echo "File size exceeds limit.";
+            echo "<script>alert('Invalid file type.');</script>";
         }
-    } else {
-        echo "Error uploading file.";
     }
 }
 
 $conn->close();
 ?>
-
 
 
 <!DOCTYPE html>
@@ -89,19 +106,16 @@ $conn->close();
     <meta name="description" content="Voter Registration Form">
     <meta name="author" content="Your Name">
     <meta name="keywords" content="Voter Registration">
-    <!-- Link to the existing CSS file -->
     <link rel="stylesheet" type="text/css" href="css/styles.css">
-    <!-- Link to the new responsive CSS file -->
     <link rel="stylesheet" type="text/css" href="css/responsive.css">
     <title>Enter Your Details</title>
     <style>
-        /* Optional error styling */
         .error {
             border: 1px solid red;
         }
         label > span {
-            color: red; /* Make asterisks red */
-            margin-left: 4px; /* Optional: Adjust spacing */
+            color: red;
+            margin-left: 4px;
         }
     </style>
 </head>
@@ -121,7 +135,7 @@ $conn->close();
                     </li>
                 </ul>
                 <div class="tab-content">
-                    <form action="" method="POST" enctype="multipart/form-data">
+                    <form action="" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
                         <div class="tab-pane active" id="tab1">
                             <div class="input-group">
                                 <label>First Name <span>*</span></label>
@@ -162,6 +176,14 @@ $conn->close();
                             <div class="input-group">
                                 <label>Email ID <span>*</span></label>
                                 <input type="email" name="email" placeholder="Enter Your Email ID" required>
+                            </div>
+                            <div class="input-group">
+                                <label>Aadhar Number <span>*</span></label>
+                                <input type="text" name="aadhar" placeholder="Enter Your Aadhar Number" required>
+                            </div>
+                            <div class="input-group">
+                                <label>Upload Aadhar <span>*</span></label>
+                                <input type="file" name="aadharfile" accept="image/*,application/pdf" required>
                             </div>
                             <div class="input-group">
                                 <label>Upload Photo <span>*</span></label>
@@ -316,6 +338,25 @@ $conn->close();
             document.querySelector(`a[href="#${tabId}"]`).parentNode.classList.add('active');
         }
     });
+
+    function validateForm() {
+        const mobileInput = document.querySelector('input[name="mobile"]');
+        const aadharInput = document.querySelector('input[name="aadhar"]');
+        const mobileValue = mobileInput.value.trim();
+        const aadharValue = aadharInput.value.trim();
+
+        if (mobileValue.length !== 10 || isNaN(mobileValue)) {
+            alert('Mobile number must be exactly 10 digits.');
+            return false;
+        }
+
+        if (aadharValue.length !== 12 || isNaN(aadharValue)) {
+            alert('Aadhar number must be exactly 12 digits.');
+            return false;
+        }
+
+        return true;
+    }
 </script>
 </body>
 </html>

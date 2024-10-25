@@ -3,7 +3,9 @@ include 'includes/session.php';
 
 if(isset($_POST['delete'])){
     $id = $_POST['id'];
-    $sql = "DELETE FROM voters WHERE id = '$id'";
+
+    // Delete from voters_detail table
+    $sql = "DELETE FROM voters_detail WHERE voters_id = '$id'";
     if($conn->query($sql)){
         $_SESSION['success'] = 'Voter deleted successfully';
     } else {

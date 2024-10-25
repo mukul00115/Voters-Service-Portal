@@ -16,7 +16,7 @@ while ($row = $query->fetch_assoc()) {
                 $output['message'][] = '<li>You can only choose '.$row['max_vote'].' candidates for '.$row['description'].'</li>';
             } else {
                 foreach ($_POST[$position] as $candidate) {
-                    $sql = "INSERT INTO votes (voters_id, candidate_id, position_id) VALUES ('".$voter['id']."', '$candidate', '".$row['id']."')";
+                    $sql = "INSERT INTO votes (voters_id, candidate_id, position_id) VALUES ('".$voter['voters_id']."', '$candidate', '".$row['id']."')";
                     if(!$conn->query($sql)){
                         $output['error'] = true;
                         $output['message'][] = $conn->error;
@@ -24,7 +24,7 @@ while ($row = $query->fetch_assoc()) {
                 }
             }
         } else {
-            $sql = "INSERT INTO votes (voters_id, candidate_id, position_id) VALUES ('".$voter['id']."', '".$_POST[$position]."', '".$row['id']."')";
+            $sql = "INSERT INTO votes (voters_id, candidate_id, position_id) VALUES ('".$voter['voters_id']."', '".$_POST[$position]."', '".$row['id']."')";
             if(!$conn->query($sql)){
                 $output['error'] = true;
                 $output['message'][] = $conn->error;

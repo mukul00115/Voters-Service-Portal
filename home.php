@@ -176,7 +176,7 @@ include 'includes/header.php';
                                 $sql = "SELECT * FROM positions ORDER BY priority ASC";
                                 $query = $conn->query($sql);
                                 while ($row = $query->fetch_assoc()) {
-                                    $sql = "SELECT * FROM votes WHERE voters_id = '".$voter['id']."' AND position_id = '".$row['id']."'";
+                                    $sql = "SELECT * FROM votes WHERE voters_id = '".$voter['voters_id']."' AND position_id = '".$row['id']."'";
                                     $vquery = $conn->query($sql);
                                     if ($vquery->num_rows > 0) {
                                         echo '<div class="text-center">';
@@ -336,7 +336,9 @@ $(function(){
                         $('#alert').show();
                     }
                     else{
+                        // Change submit button to View Ballot button and save state in session storage
                         $('.submit[data-position="' + position + '"]').replaceWith('<a href="#" class="btn btn-primary btn-curve view-ballot"><i class="fa fa-eye"></i> View Ballot</a>');
+                        sessionStorage.setItem('voted_' + position, true);
                     }
                 }
             });
@@ -362,7 +364,16 @@ $(function(){
             }
         });
     });
+
+    // Check session storage and replace submit buttons if votes are already submitted
+    $('button.submit').each(function() {
+        var position = $(this).data('position');
+        if (sessionStorage.getItem('voted_' + position)) {
+            $(this).replaceWith('<a href="#" class="btn btn-primary btn-curve view-ballot"><i class="fa fa-eye"></i> View Ballot</a>');
+        }
+    });
 });
+
 </script>
 </body>
 </html>

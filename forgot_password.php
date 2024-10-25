@@ -1,6 +1,6 @@
 <?php
 session_start();
-include 'includes/conn.php'; // Your database connection file
+include 'includes/conn.php'; // Ensure this includes the code to connect to the database
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $voters_id = $_POST['voters_id'];
@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     // Fetch the user's voters_id
-    $stmt = $conn->prepare('SELECT * FROM voters WHERE voters_id = ?');
+    $stmt = $conn->prepare('SELECT * FROM voters_detail WHERE voters_id = ?');
     $stmt->bind_param('s', $voters_id);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
         // Update the user's password in the database
-        $stmt = $conn->prepare('UPDATE voters SET password = ? WHERE voters_id = ?');
+        $stmt = $conn->prepare('UPDATE voters_detail SET password = ? WHERE voters_id = ?');
         $stmt->bind_param('ss', $hashed_password, $voters_id);
         if ($stmt->execute()) {
             $_SESSION['success'] = 'Your password has been reset';
@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             header('Location: forgot_password.php');
         }
     } else {
-        $_SESSION['error'] = 'Invalid voters_id';
+        $_SESSION['error'] = 'Invalid Voter ID';
         header('Location: forgot_password.php');
     }
     exit();
